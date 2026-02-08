@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "cd web && npm run dev",
+    "dev:api": "cd api && npm run dev",
+    "lint": "oxlint --fix",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "check": "oxlint && oxfmt --check ."
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "oxfmt": "^0.28.0",
+    "oxlint": "^1.43.0"
+  }
+}
