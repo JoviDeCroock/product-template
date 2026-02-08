@@ -1,4 +1,4 @@
-import { signal, action, createModel } from "@preact/signals";
+import { signal, createModel } from "@preact/signals";
 import { authClient } from "../lib/auth";
 
 type Tab = "signin" | "signup";
@@ -11,12 +11,12 @@ export const AuthFormModel = createModel(() => {
   const email = signal("");
   const password = signal("");
 
-  const switchTab = action((t: Tab) => {
+  const switchTab = (t: Tab) => {
     tab.value = t;
     error.value = "";
-  });
+  };
 
-  const signIn = action(async () => {
+  const signIn = async () => {
     loading.value = true;
     error.value = "";
     try {
@@ -35,9 +35,9 @@ export const AuthFormModel = createModel(() => {
     } finally {
       loading.value = false;
     }
-  });
+  };
 
-  const signUp = action(async () => {
+  const signUp = async () => {
     loading.value = true;
     error.value = "";
     try {
@@ -57,7 +57,7 @@ export const AuthFormModel = createModel(() => {
     } finally {
       loading.value = false;
     }
-  });
+  };
 
   return { tab, loading, error, name, email, password, switchTab, signIn, signUp };
 });

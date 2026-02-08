@@ -1,4 +1,4 @@
-import { signal, computed, action, createModel } from "@preact/signals";
+import { signal, computed, createModel } from "@preact/signals";
 import { authClient } from "../lib/auth";
 import { getSubscription, type SubscriptionResponse } from "../lib/api";
 
@@ -10,7 +10,10 @@ export const BillingModel = createModel(() => {
   const plan = computed(() => subscription.value?.plan ?? "free");
   const isPro = computed(() => plan.value === "pro");
 
-  const fetch = action(async () => {
+  // Alternatively you can add this to an effect and run it on app load
+  // this can be convenient if you have variables in your fetch function
+  // that when updated should re-fetch the subscription (e.g. user id from auth model)
+  const fetch = async () => {
     loading.value = true;
     error.value = null;
     try {
@@ -20,9 +23,9 @@ export const BillingModel = createModel(() => {
     } finally {
       loading.value = false;
     }
-  });
+  };
 
-  const upgrade = action(async () => {
+  const upgrade = async () => {
     upgradeLoading.value = true;
     try {
       const res = await authClient.$fetch<{ url: string }>("/checkout", {
@@ -39,9 +42,9 @@ export const BillingModel = createModel(() => {
       upgradeLoading.value = false;
       error.value = "Failed to start checkout";
     }
-  });
+  };
 
-  const manage = action(async () => {
+  const manage = async () => {
     try {
       const res = await authClient.$fetch<{ url: string }>("/customer/portal", {
         method: "GET",
@@ -54,7 +57,7 @@ export const BillingModel = createModel(() => {
     } catch {
       error.value = "Failed to open customer portal";
     }
-  });
+  };
 
   return { loading, subscription, error, upgradeLoading, plan, isPro, fetch, upgrade, manage };
 });
