@@ -4,13 +4,13 @@ A full-stack SaaS starter kit with authentication, billing, and a dashboard — 
 
 ## Tech Stack
 
-| Layer      | Technology                           |
-| ---------- | ------------------------------------ |
-| Frontend   | Preact, Vite, Tailwind CSS           |
-| Backend    | Hono (Cloudflare Workers)            |
-| Database   | Drizzle ORM + Cloudflare D1 (SQLite) |
-| Auth       | BetterAuth (email/password)          |
-| Billing    | Polar (free/pro plans, webhooks)     |
+| Layer    | Technology                           |
+| -------- | ------------------------------------ |
+| Frontend | Preact, Vite, Tailwind CSS           |
+| Backend  | Hono (Cloudflare Workers)            |
+| Database | Drizzle ORM + Cloudflare D1 (SQLite) |
+| Auth     | BetterAuth (email/password)          |
+| Billing  | Polar (free/pro plans, webhooks)     |
 
 ## Project Structure
 
