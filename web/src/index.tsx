@@ -53,9 +53,13 @@ export function App() {
 }
 
 if (typeof window !== "undefined") {
-  hydrate(<App />, document.getElementById("app"));
+  const appElement = document.getElementById("app");
+  if (!appElement) {
+    throw new Error("App element not found");
+  }
+  hydrate(<App />, appElement);
 }
 
-export async function prerender(data) {
+export async function prerender(data: Record<string, unknown>) {
   return await ssr(<App {...data} />);
 }

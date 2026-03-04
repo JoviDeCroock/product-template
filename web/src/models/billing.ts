@@ -35,7 +35,7 @@ export const BillingModel = createModel(() => {
 
       if ("data" in res && res.data?.url) {
         window.location.href = res.data.url;
-      } else if ("url" in res) {
+      } else if ("url" in res && typeof res.url === "string") {
         window.location.href = res.url;
       }
     } catch {
@@ -51,7 +51,7 @@ export const BillingModel = createModel(() => {
       });
       if ("data" in res && res.data?.url) {
         window.location.href = res.data.url;
-      } else if ("url" in res) {
+      } else if ("url" in res && typeof res.url === "string") {
         window.location.href = res.url;
       }
     } catch {

@@ -8,7 +8,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply app-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply app-db --remote",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@polar-sh/better-auth": "^1.6.4",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^25.1.0",
     "drizzle-kit": "^0.31.8",
+    "typescript": "^5.9.3",
     "wrangler": "^4.4.0"
   }
 }
