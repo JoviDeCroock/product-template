@@ -8,6 +8,13 @@
       "when": 1770543351467,
       "tag": "0000_jittery_bill_hollister",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1772649063435,
+      "tag": "0001_mighty_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

@@ -78,43 +78,18 @@ export function createAuth(env: Env) {
             onSubscriptionActive: async (payload) => {
               const customerId = payload.data.customerId;
               const subscriptionId = payload.data.id;
+              const externalUserId = payload.data.customer.externalId;
               const currentPeriodEnd = payload.data.currentPeriodEnd
                 ? new Date(payload.data.currentPeriodEnd)
                 : null;
-
-              // Find user by polar customer ID in subscription table
-              const existing = await db
-                .select()
-                .from(schema.subscription)
-                .where(eq(schema.subscription.polarCustomerId, customerId))
-                .get();
-
               const now = new Date();
 
-              if (existing) {
+              if (typeof externalUserId === "string" && externalUserId.length > 0) {
                 await db
-                  .update(schema.subscription)
-                  .set({
-                    plan: "pro",
-                    status: "active",
-                    polarSubscriptionId: subscriptionId,
-                    currentPeriodEnd,
-                    updatedAt: now,
-                  })
-                  .where(eq(schema.subscription.id, existing.id));
-              } else {
-                // No existing subscription row, create one
-                // First find user ID by customer ID
-                const user = await db
-                  .select()
-                  .from(schema.user)
-                  .where(eq(schema.user.id, payload.data.customer.externalId as string))
-                  .get();
-
-                if (user) {
-                  await db.insert(schema.subscription).values({
+                  .insert(schema.subscription)
+                  .values({
                     id: crypto.randomUUID(),
-                    userId: user.id,
+                    userId: externalUserId,
                     polarCustomerId: customerId,
                     polarSubscriptionId: subscriptionId,
                     plan: "pro",
@@ -122,9 +97,32 @@ export function createAuth(env: Env) {
                     currentPeriodEnd,
                     createdAt: now,
                     updatedAt: now,
+                  })
+                  .onConflictDoUpdate({
+                    target: schema.subscription.userId,
+                    set: {
+                      polarCustomerId: customerId,
+                      polarSubscriptionId: subscriptionId,
+                      plan: "pro",
+                      status: "active",
+                      currentPeriodEnd,
+                      updatedAt: now,
+                    },
                   });
-                }
+
+                return;
               }
+
+              await db
+                .update(schema.subscription)
+                .set({
+                  plan: "pro",
+                  status: "active",
+                  polarSubscriptionId: subscriptionId,
+                  currentPeriodEnd,
+                  updatedAt: now,
+                })
+                .where(eq(schema.subscription.polarCustomerId, customerId));
             },
             onSubscriptionCanceled: async (payload) => {
               const customerId = payload.data.customerId;
@@ -162,21 +160,11 @@ export function createAuth(env: Env) {
                 .get();
 
               if (user) {
-                const existing = await db
-                  .select()
-                  .from(schema.subscription)
-                  .where(eq(schema.subscription.userId, user.id))
-                  .get();
-
                 const now = new Date();
 
-                if (existing) {
-                  await db
-                    .update(schema.subscription)
-                    .set({ polarCustomerId: customerId, updatedAt: now })
-                    .where(eq(schema.subscription.id, existing.id));
-                } else {
-                  await db.insert(schema.subscription).values({
+                await db
+                  .insert(schema.subscription)
+                  .values({
                     id: crypto.randomUUID(),
                     userId: user.id,
                     polarCustomerId: customerId,
@@ -184,8 +172,14 @@ export function createAuth(env: Env) {
                     status: "active",
                     createdAt: now,
                     updatedAt: now,
+                  })
+                  .onConflictDoUpdate({
+                    target: schema.subscription.userId,
+                    set: {
+                      polarCustomerId: customerId,
+                      updatedAt: now,
+                    },
                   });
-                }
               }
             },
           }),

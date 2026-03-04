@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -73,5 +73,9 @@ export const subscription = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   },
-  (t) => [index("subscription_user_idx").on(t.userId)],
+  (t) => [
+    uniqueIndex("subscription_user_unique_idx").on(t.userId),
+    uniqueIndex("subscription_polar_customer_unique_idx").on(t.polarCustomerId),
+    uniqueIndex("subscription_polar_subscription_unique_idx").on(t.polarSubscriptionId),
+  ],
 );

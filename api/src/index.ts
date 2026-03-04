@@ -53,6 +53,10 @@ app.get("/api/billing-success", async (c) => {
     return c.json({ error: "Invalid checkout session" }, 400);
   }
 
+  if (typeof checkout.externalCustomerId !== "string" || checkout.externalCustomerId.length === 0) {
+    return c.json({ error: "Checkout is missing a user reference" }, 400);
+  }
+
   // List subscriptions for this customer
   const subscriptions = await polarClient.subscriptions.list({
     customerId: checkout.customerId,
@@ -74,21 +78,36 @@ app.get("/api/billing-success", async (c) => {
     return c.json({ error: "No active subscription found" }, 404);
   }
 
-  // Update the database synchronously
+  // Upsert the subscription row to keep checkout success idempotent.
   const now = new Date();
-  await db.insert(schema.subscription).values({
-    id: crypto.randomUUID(),
-    plan: "pro",
-    status: "active",
-    createdAt: now,
-    polarCustomerId: checkout.customerId,
-    userId: checkout.externalCustomerId as string,
-    polarSubscriptionId: activeSubscription.id,
-    currentPeriodEnd: activeSubscription.currentPeriodEnd
-      ? new Date(activeSubscription.currentPeriodEnd)
-      : null,
-    updatedAt: now,
-  });
+  await db
+    .insert(schema.subscription)
+    .values({
+      id: crypto.randomUUID(),
+      plan: "pro",
+      status: "active",
+      createdAt: now,
+      polarCustomerId: checkout.customerId,
+      userId: checkout.externalCustomerId,
+      polarSubscriptionId: activeSubscription.id,
+      currentPeriodEnd: activeSubscription.currentPeriodEnd
+        ? new Date(activeSubscription.currentPeriodEnd)
+        : null,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: schema.subscription.userId,
+      set: {
+        plan: "pro",
+        status: "active",
+        polarCustomerId: checkout.customerId,
+        polarSubscriptionId: activeSubscription.id,
+        currentPeriodEnd: activeSubscription.currentPeriodEnd
+          ? new Date(activeSubscription.currentPeriodEnd)
+          : null,
+        updatedAt: now,
+      },
+    });
 
   return c.redirect(`${getAppOrigin(c.env)}/billing?success=true`);
 });
