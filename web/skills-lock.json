@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
+    },
+    "signals": {
+      "source": "jovidecroock/skills",
+      "sourceType": "github",
+      "computedHash": "b30c4e293e8955b4382ae3af5d008ffaaa716cdcca3220003d1715164dc301d4"
+    }
+  }
+}
