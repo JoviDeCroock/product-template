@@ -5,6 +5,7 @@
     "**/dist/**",
     "**/dist-ssr/**",
     "**/.wrangler/**",
+    "**/.agents/**",
     "**/coverage/**",
     "api/worker-configuration.d.ts",
     "**/*.min.js"
