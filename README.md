@@ -68,6 +68,7 @@ cp web/.env.example web/.env
 | ---------------------- | ------------------------------------------------------------------------------------------ |
 | `BETTER_AUTH_SECRET`   | Any random string — used to sign session tokens. Generate one with `openssl rand -hex 32`. |
 | `BETTER_AUTH_URL`      | The API base URL. For local dev: `http://localhost:8787/api/auth`                          |
+| `APP_URL`              | Frontend origin. For local dev: `http://localhost:5173`                                    |
 | `POLAR_ACCESS_TOKEN`   | Your Polar API access token (see Polar setup below).                                       |
 | `POLAR_WEBHOOK_SECRET` | Webhook signing secret from Polar (see Polar setup below).                                 |
 | `POLAR_PRO_PRODUCT_ID` | The Polar product ID for your "Pro" plan.                                                  |
@@ -156,10 +157,8 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
    Each command will prompt you to paste the value.
 
 6. **Update production URLs** in `api/wrangler.jsonc`:
-   - Set `BETTER_AUTH_URL` to your production API URL (e.g. `https://api.yourdomain.com`).
-
-7. **Update CORS and redirect URLs** in `api/src/index.ts` and `api/src/lib/auth.ts`:
-   - Replace `app.example.com` and `api.example.com` with your actual domains.
+   - Set `BETTER_AUTH_URL` to your production auth URL (e.g. `https://api.yourdomain.com/api/auth`).
+   - Set `APP_URL` to your production frontend URL (e.g. `https://app.yourdomain.com`).
 
 ### Deploy the API
 

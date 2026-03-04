@@ -6,6 +6,7 @@ import { createAuth } from "./lib/auth";
 import { subscription } from "./routes/subscription";
 import { Bindings, Variables } from "./types";
 import { isProduction } from "./utils/isProduction";
+import { getAppOrigin } from "./utils/urls";
 import * as schema from "./db/schema";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -23,8 +24,7 @@ app.use("/api/*", async (c, next) => {
 app.use(
   "/api/*",
   cors({
-    origin: (origin, c) =>
-      isProduction(c.env) ? "https://app.example.com" : "http://localhost:5173",
+    origin: (_, c) => getAppOrigin(c.env),
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
@@ -90,11 +90,7 @@ app.get("/api/billing-success", async (c) => {
     updatedAt: now,
   });
 
-  return c.redirect(
-    isProduction(c.env)
-      ? "https://app.example.com/billing?success=true"
-      : "http://localhost:5173/billing?success=true",
-  );
+  return c.redirect(`${getAppOrigin(c.env)}/billing?success=true`);
 });
 
 // Mount BetterAuth handler

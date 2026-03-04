@@ -6,6 +6,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "BETTER_AUTH_URL": "https://api.example.com",
+    "APP_URL": "https://app.example.com",
     "LOCAL": "false",
   },
   "d1_databases": [

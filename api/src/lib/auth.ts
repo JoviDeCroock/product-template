@@ -6,11 +6,14 @@ import { Polar } from "@polar-sh/sdk";
 import { polar, checkout, portal, webhooks } from "@polar-sh/better-auth";
 import * as schema from "../db/schema";
 import { isProduction } from "../utils/isProduction";
+import { getApiOrigin, getAppOrigin } from "../utils/urls";
 
 type Env = Cloudflare.Env;
 
 export function createAuth(env: Env) {
   const db = drizzle(env.DB, { schema });
+  const appOrigin = getAppOrigin(env);
+  const apiOrigin = getApiOrigin(env);
 
   const polarClient = new Polar({
     accessToken: env.POLAR_ACCESS_TOKEN,
@@ -32,7 +35,7 @@ export function createAuth(env: Env) {
     emailAndPassword: {
       enabled: true,
     },
-    trustedOrigins: isProduction(env) ? ["https://app.example.com"] : ["http://localhost:5173"],
+    trustedOrigins: [appOrigin],
     plugins: [
       polar({
         client: polarClient,
@@ -50,12 +53,8 @@ export function createAuth(env: Env) {
             ],
             // This success URL is more to support local-dev so we don't have to only use
             // webhooks. All though local webhooks are now possible with https://polar.sh/docs/integrate/webhooks/locally
-            successUrl: isProduction(env)
-              ? "https://api.example.com/api/billing-success?checkout_id={CHECKOUT_ID}"
-              : "http://localhost:8787/api/billing-success?checkout_id={CHECKOUT_ID}",
-            returnUrl: isProduction(env)
-              ? "https://app.example.com/billing"
-              : "http://localhost:5173/billing",
+            successUrl: `${apiOrigin}/api/billing-success?checkout_id={CHECKOUT_ID}`,
+            returnUrl: `${appOrigin}/billing`,
           }),
           portal(),
           webhooks({

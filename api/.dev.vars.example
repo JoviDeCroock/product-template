@@ -1,5 +1,6 @@
 BETTER_AUTH_SECRET=secret-phrase
 BETTER_AUTH_URL=http://localhost:8787/api/auth
+APP_URL=http://localhost:5173
 POLAR_ACCESS_TOKEN=your-polar-access-token
 POLAR_WEBHOOK_SECRET=your-polar-webhook-secret
 POLAR_PRO_PRODUCT_ID=your-polar-pro-product-id
